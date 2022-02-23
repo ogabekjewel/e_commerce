@@ -16,6 +16,7 @@ module.exports = class AdminController{
             })
         }
     }
+
     static async CreateAdminPATCH(req, res) {
         try {
             const { user_id } = req.params
@@ -29,6 +30,41 @@ module.exports = class AdminController{
                 ok: true,
                 message: "succes",
                 user,
+            })
+
+        } catch(e) {
+            res.status(400).json({
+                ok: false,
+                message: e + "",
+            })
+        }
+    }
+
+    static async UserDELETE(req, res) {
+        try {
+            const { user_id } = req.params
+
+            let user = users.findOne({
+                user_id,
+            })
+
+            if(!user) throw new Error("User not found")
+            
+            if(user.role === "superadmin") {
+                res.status(403).json({
+                    ok: false,
+                    message: "Permission dained"
+                })
+                return
+            }
+
+            await users.deleteOne({
+                user_id,
+            })
+
+            res.status(201).json({
+                ok: true,
+                message: "User deleted",
             })
 
         } catch(e) {
