@@ -1,10 +1,13 @@
-const { UsersGET, CreateAdminPATCH, UserDELETE } = require("../Controllers/AdminController")
+const { UsersGET, CreateAdminPATCH, UserDELETE, CategoriesGET } = require("../Controllers/AdminController")
 const AdminMiddleware = require("../middlewares/AdminMiddleware")
 const router = require("express").Router()
 
 router.get("/users", AdminMiddleware, UsersGET)
 router.patch("/users/make-admin/:user_id", AdminMiddleware, CreateAdminPATCH)
 router.delete("/users/delete/:user_id", AdminMiddleware, UserDELETE)
+
+router.get("/categories", AdminMiddleware, CategoriesGET)
+
 module.exports = {
     path: "/admin",
     router,

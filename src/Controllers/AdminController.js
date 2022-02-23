@@ -1,4 +1,6 @@
 const users = require("../models/UserModel")
+const categories = require("../models/CategoryModel")
+
 module.exports = class AdminController{
     static async UsersGET(req, res) {
         try {
@@ -69,6 +71,30 @@ module.exports = class AdminController{
 
         } catch(e) {
             res.status(400).json({
+                ok: false,
+                message: e + "",
+            })
+        }
+    }
+
+    static async CategoriesGET(req, res) {
+        try {
+            let { c_page, p_page } = req.query
+
+            c_page = c_page || 1
+
+            let categoryList = await categories.find({
+                limit: p_page,
+                offset: p_page * (c_page - 1)
+            })
+
+            res.status(200).json({
+                ok: true,
+                categories:categoryList,
+            })
+
+        } catch(e) {
+            res.status(401).json({
                 ok: false,
                 message: e + "",
             })
