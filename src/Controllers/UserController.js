@@ -61,7 +61,6 @@ module.exports = class UserController {
 
     static async VerifyEmailGET(req, res) {
         try {
-            console.log(true)
             let { user_id } = req.params
 
             let user = await users.findOneAndUpdate(
