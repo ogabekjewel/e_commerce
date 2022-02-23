@@ -1,5 +1,7 @@
 const users = require("../models/UserModel")
 const categories = require("../models/CategoryModel")
+const CategoryValidation = require("../validations/CategoryValidation")
+const { v4 } = require("uuid")
 
 module.exports = class AdminController{
     static async UsersGET(req, res) {
@@ -95,6 +97,35 @@ module.exports = class AdminController{
 
         } catch(e) {
             res.status(401).json({
+                ok: false,
+                message: e + "",
+            })
+        }
+    }
+    
+    static async CategoriesPOST(req, res) {
+        try{
+            let { category_name } = await CategoryValidation(req.body)
+            
+            let category = await categories.findOne({
+                category_name,
+            })
+            console.log(category)
+            if(category) throw new Error("Category has already been added")
+
+            category = await categories.create({
+                category_id: v4(),
+                category_name,
+            })
+
+            res.status(200).json({
+                ok: true,
+                message: "Categories created",
+                category,
+            })
+
+        } catch(e) {
+            res.status(400).json({
                 ok: false,
                 message: e + "",
             })
