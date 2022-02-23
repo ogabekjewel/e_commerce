@@ -1,0 +1,5 @@
+.txt
+*/.env
+node_modules/
+paccage-lock.json
+.*/
