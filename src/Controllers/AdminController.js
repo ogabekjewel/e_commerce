@@ -86,10 +86,7 @@ module.exports = class AdminController{
             c_page = c_page || 1
             p_page = p_page || 3
 
-            let categoryList = await categories.find({
-                limit: p_page,
-                offset: p_page * (c_page - 1)
-            })
+            let categoryList = await categories.find().skip(p_page * (c_page - 1)).limit(p_page)
 
             res.status(200).json({
                 ok: true,
