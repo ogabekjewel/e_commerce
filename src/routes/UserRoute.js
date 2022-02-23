@@ -1,8 +1,8 @@
-const { SignUpPOST, VerifyEmailGET } = require("../Controllers/UserController")
+const { SignUpPOST, VerifyEmailGET, LoginPOST } = require("../Controllers/UserController")
 
 const router = require("express").Router()
 
-router.post("/login",)
+router.post("/login", LoginPOST)
 router.post("/signup", SignUpPOST)
 router.get("/verify/:user_id", VerifyEmailGET)
 

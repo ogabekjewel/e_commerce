@@ -1,16 +1,17 @@
 const users = require("../models/UserModel")
-const { generateHash } = require("../modules/bcrypt")
+const { generateHash, compareHash } = require("../modules/bcrypt")
 const { v4 } = require("uuid")
 const { generateToken } = require("../modules/jwt")
 const SendEmail = require("../modules/email")
 const { PORT } = require("../../config")
 const SignUpValidation = require("../validations/SignUpValidation")
+const LoginValidation = require("../validations/LoginValidation")
 
 module.exports = class UserController {
     static async SignUpPOST(req, res) {
         try {
             const { full_name, username, email, password } = await SignUpValidation(req.body)
-
+            
             let user = await users.findOne({
                 email, 
                 username,
@@ -20,8 +21,8 @@ module.exports = class UserController {
                 throw new Error("User has already registered")
             }
 
-            let hash = generateHash(password)
-
+            let hash = await generateHash(password)
+            
             user = await users.create({
                 user_id: v4(),
                 full_name,
@@ -31,9 +32,8 @@ module.exports = class UserController {
             })
 
             let token = generateToken({
-                full_name,
-                username,
-                email,
+                ...user._doc,
+                password: undefined,
             })
 
             let verificationEmail = await SendEmail(
@@ -75,6 +75,39 @@ module.exports = class UserController {
             })  
         } catch(e) {
             console.log(e)
+        }
+    }
+
+    static async LoginPOST(req, res) {
+        try {
+            const { email, password } = await LoginValidation(req.body)
+
+            let user = await users.findOne({
+                email,
+            })
+            console.log(user)
+            if(!user) throw new Error("User is not registered")
+    
+            let isPasswordTrue = await compareHash(user.password, password)
+    
+            if(!isPasswordTrue) throw new Error("Password incorrect")
+    
+            let token = generateToken({
+                ...user._doc,
+                password: undefined,
+            })
+    
+            res.cookie("token", token).status(200).json({
+                ok: true,
+                message: "LOGGED IN",
+                user,
+                token,
+            })
+        } catch (e) {
+            res.status(400).json({
+                ok: false,
+                message: e + "", 
+            })
         }
     }
 }
