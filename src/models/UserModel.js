@@ -32,6 +32,11 @@ const UserSchema = new mongoose.Schema({
     avatar: {
         type: String,
     },
+    role: {
+        type: String,
+        required: true,
+        default: "user",
+    },
 })
 
 const users = mongoose.model("users", UserSchema)
