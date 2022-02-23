@@ -8,6 +8,7 @@ router.delete("/users/delete/:user_id", AdminMiddleware, UserDELETE)
 
 router.get("/categories", AdminMiddleware, CategoriesGET)
 router.post("/categories/create", AdminMiddleware, CategoriesPOST)
+
 module.exports = {
     path: "/admin",
     router,

@@ -84,6 +84,7 @@ module.exports = class AdminController{
             let { c_page, p_page } = req.query
 
             c_page = c_page || 1
+            p_page = p_page || 3
 
             let categoryList = await categories.find({
                 limit: p_page,
@@ -110,12 +111,12 @@ module.exports = class AdminController{
             let category = await categories.findOne({
                 category_name,
             })
-            console.log(category)
+
             if(category) throw new Error("Category has already been added")
 
             category = await categories.create({
                 category_id: v4(),
-                category_name,
+                category_name: category_name,
             })
 
             res.status(200).json({
@@ -125,6 +126,7 @@ module.exports = class AdminController{
             })
 
         } catch(e) {
+            console.log(e)
             res.status(400).json({
                 ok: false,
                 message: e + "",
