@@ -44,7 +44,7 @@ module.exports = class AdminController{
         try {
             const { user_id } = req.params
 
-            let user = users.findOne({
+            let user = await users.findOne({
                 user_id,
             })
 
