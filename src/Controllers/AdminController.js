@@ -2,7 +2,10 @@ const users = require("../models/UserModel")
 const categories = require("../models/CategoryModel")
 const products = require("../models/ProductModel")
 const CategoryValidation = require("../validations/CategoryValidation")
+const ProductPOSTValidation = require("../validations/ProductPOSTValidation")
+const slugify = require("slugify")
 const { v4 } = require("uuid")
+
 
 module.exports = class AdminController{
     static async UsersGET(req, res) {
@@ -196,6 +199,49 @@ module.exports = class AdminController{
                 ok: true,
                 ProductItems,
             })
+        } catch (e) {
+            res.status(400).json({
+                ok: false,
+                message: e + "",
+            })
+        }
+    }
+
+    static async ProductPOST(req, res) {
+        try{
+            const { category_id } = req.params
+            const { product_name, price, description } = await ProductPOSTValidation(req.body)
+
+            let slug = slugify(product_name.toLowerCase())
+
+            let product = await products.findOne({
+                slug, 
+                category_id,
+            })
+
+            if(product) throw new Error(`Product slug ${slug} already exsists`)
+
+            let category = await categories.findOne({
+                category_id,
+            })
+
+            if(!category) throw new Error("Category not found")
+
+            product = await products.create({
+                product_id: v4(),
+                product_name,
+                product_slug: slug,
+                category_id,
+                description,
+                price,
+            })
+
+            res.status(200).json({
+                ok: true,
+                message: "Product added",
+                product,
+            })
+
         } catch (e) {
             res.status(400).json({
                 ok: false,
