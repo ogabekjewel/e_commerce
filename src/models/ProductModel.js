@@ -10,6 +10,11 @@ const ProductSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    product_slug: {
+        type: String,
+        unique: true,
+        required: true,
+    },
     price: {
         type: Number,
         required: true,
