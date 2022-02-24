@@ -130,4 +130,56 @@ module.exports = class AdminController{
             })
         }
     }
+
+    static async CategoriesPATCH(req, res) {
+        try{
+            let { category_name } = await CategoryValidation(req.body)
+            
+          
+            let category = await categories.findOne({
+                category_id: req.params.category_id,
+            })
+            
+            if(!category) throw new Error("Category not found")
+
+            category = await categories.findOneAndUpdate(
+                { category_id: req.params.category_id },
+                { category_name }
+            )
+            
+            res.status(200).json({
+                ok: true,
+                message: "Categories update",
+            })
+
+        } catch(e) {
+            console.log(e)
+            res.status(400).json({
+                ok: false,
+                message: e + "",
+            })
+        }
+    }
+
+    static async CategoriesDELETE(req, res) {
+        try{
+            let { category_id } = req.params
+
+            await categories.deleteOne({
+                category_id,
+            })
+
+            res.status(200).json({
+                ok: true,
+                message: "DELETED",
+            })
+        } catch(e) {
+            res.status(400).json({
+                ok: false,
+                message: e + "",
+            })
+        }
+
+    }
+
 }

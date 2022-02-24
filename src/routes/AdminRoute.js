@@ -1,4 +1,4 @@
-const { UsersGET, CreateAdminPATCH, UserDELETE, CategoriesGET, CategoriesPOST } = require("../Controllers/AdminController")
+const { UsersGET, CreateAdminPATCH, UserDELETE, CategoriesGET, CategoriesPOST, CategoriesPATCH, CategoriesDELETE } = require("../Controllers/AdminController")
 const AdminMiddleware = require("../middlewares/AdminMiddleware")
 const router = require("express").Router()
 
@@ -8,6 +8,9 @@ router.delete("/users/delete/:user_id", AdminMiddleware, UserDELETE)
 
 router.get("/categories", AdminMiddleware, CategoriesGET)
 router.post("/categories/create", AdminMiddleware, CategoriesPOST)
+router.patch("/categories/update/:category_id", CategoriesPATCH)
+router.delete("/categories/delete/:cattegory_id", CategoriesDELETE)
+
 
 module.exports = {
     path: "/admin",
