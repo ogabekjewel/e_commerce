@@ -1,5 +1,6 @@
 const users = require("../models/UserModel")
 const categories = require("../models/CategoryModel")
+const products = require("../models/ProductModel")
 const CategoryValidation = require("../validations/CategoryValidation")
 const { v4 } = require("uuid")
 
@@ -182,4 +183,24 @@ module.exports = class AdminController{
 
     }
 
+    static async ProductsGET(req, res) {
+        try{
+            let { c_page, p_page } = req.query
+
+            c_page = c_page || 1
+            p_page = p_page || 10
+
+            let ProductItems = await products.find().skip(p_page * (c_page - 1)).limit(p_page)
+
+            res.status(200).json({
+                ok: true,
+                ProductItems,
+            })
+        } catch (e) {
+            res.status(400).json({
+                ok: false,
+                message: e + "",
+            })
+        }
+    }
 }

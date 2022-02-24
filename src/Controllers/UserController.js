@@ -85,7 +85,7 @@ module.exports = class UserController {
             let user = await users.findOne({
                 email,
             })
-            console.log(user)
+         
             if(!user) throw new Error("User is not registered")
     
             let isPasswordTrue = await compareHash(user.password, password)
