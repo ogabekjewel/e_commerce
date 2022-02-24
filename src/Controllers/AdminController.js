@@ -215,12 +215,12 @@ module.exports = class AdminController{
             let slug = slugify(product_name.toLowerCase())
 
             let product = await products.findOne({
-                slug, 
+                product_slug: slug, 
                 category_id,
             })
 
             if(product) throw new Error(`Product slug ${slug} already exsists`)
-
+            
             let category = await categories.findOne({
                 category_id,
             })
