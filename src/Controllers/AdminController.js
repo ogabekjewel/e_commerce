@@ -2,11 +2,13 @@ const users = require("../models/UserModel")
 const categories = require("../models/CategoryModel")
 const products = require("../models/ProductModel")
 const product_images = require("../models/ProductImageModel")
+const product_options = require("../models/ProductOptionModel")
 const CategoryValidation = require("../validations/CategoryValidation")
 const ProductPOSTValidation = require("../validations/ProductPOSTValidation")
 const slugify = require("slugify")
 const { v4 } = require("uuid")
 const path = require("path")
+const ProductOptionValidation = require("../validations/ProductOptionValidation")
 
 module.exports = class AdminController{
     static async UsersGET(req, res) {
@@ -274,5 +276,43 @@ module.exports = class AdminController{
                 message: e + "",
             })
         }
+    }
+
+    static async ProductOptionPOST(req, res) {
+        try {
+            const { product_id } = req.params
+            const { key, value } = await ProductOptionValidation(req.body)
+    
+            let product = products.findOne({
+                product_id,
+            })
+    
+            if(!product) throw new Error("Product not found")
+    
+            let option = product_options.findOneAndUpdate({
+                product_id,
+                key: key,
+            })
+    
+            if(!option) throw new Error(`Product ${option} already exsists`)
+    
+            option = await product_options.create({
+                product_id,
+                key,
+                value,
+                product_option_id: v4(),
+            })
+    
+            res.status(200).json({
+                ok: true,
+                option,
+            })
+        } catch(e) {
+            res.status(400).json({
+                ok: false,
+                message: e + "",
+            })
+        }
+
     }
 }
