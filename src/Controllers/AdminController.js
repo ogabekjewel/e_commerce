@@ -315,4 +315,34 @@ module.exports = class AdminController{
         }
 
     }
+
+    static async ProductFilterGET(req, res) {
+        try {
+            let { category_id, c_page, p_page } = req.query
+            
+            c_page = c_page || 1
+            p_page = p_page || 1
+
+            let category = await categories.findOne({
+                category_id,
+            })
+
+            if(!category) throw new Error("Category not found")
+
+            let productItems = await products.find({
+                category_id,
+            }).skip(p_page * (c_page - 1)).limit(p_page)
+
+            res.status(200).json({
+                ok: true,
+                products: productItems,
+            })
+
+        } catch(e) {
+            res.status(400).json({
+                ok: false,
+                message: e + "",
+            })
+        }
+    }
 }
