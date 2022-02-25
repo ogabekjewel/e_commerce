@@ -9,6 +9,7 @@ const slugify = require("slugify")
 const { v4 } = require("uuid")
 const path = require("path")
 const ProductOptionValidation = require("../validations/ProductOptionValidation")
+const ProductPATCHValidation = require("../validations/ProductPATCHValidation")
 
 module.exports = class AdminController{
     static async UsersGET(req, res) {
@@ -336,7 +337,7 @@ module.exports = class AdminController{
 
     }
 
-    static async ProductFilterGET(req, res) {
+    static async ProductsFilterGET(req, res) {
         try {
             let { category_id, c_page, p_page } = req.query
             
@@ -393,4 +394,55 @@ module.exports = class AdminController{
             })
         }
     }
+
+    static async ProductsPATCH(req, res) {
+        try {
+            let { product_id } = req.params
+            let { product_name, description, price, category_id } = await ProductPATCHValidation(req.body)
+
+            let product = await products.findOne({
+                product_id,
+            })
+
+            if(!product) throw new Error("Product not found")
+
+            let slug = slugify(product_name.toLowerCase())
+
+            let productSlug = await products.findOne({
+                product_slug: slug, 
+                category_id,
+            })
+
+            if(productSlug && productSlug.product_id !== product.product_id) {
+                throw new Error(`Product ${slug} already existis`)
+            }
+
+            product = await products.findOneAndUpdate(
+                {
+                    product_id
+                },
+                {
+                    product_name,
+                    price,
+                    description,
+                    category_id,
+                    product_slug: slug,
+                }
+            )
+            
+            res.status(200).json({
+                ok: true,
+                message: "Product Updated",
+                product,
+            })
+
+
+        } catch(e) {
+            res.status(400).json({
+                ok: false,
+                message: e + "",
+            })
+        }
+    }
+
 }
