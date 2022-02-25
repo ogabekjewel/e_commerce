@@ -10,8 +10,8 @@ const ProductImageModel = new mongoose.Schema({
         type: String,
         required: true,
     },
-    images: {
-        type: Array,
+    image: {
+        type: String,
         required: true,
     },
 })

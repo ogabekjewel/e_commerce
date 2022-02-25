@@ -1,11 +1,12 @@
 const users = require("../models/UserModel")
 const categories = require("../models/CategoryModel")
 const products = require("../models/ProductModel")
+const product_images = require("../models/ProductImageModel")
 const CategoryValidation = require("../validations/CategoryValidation")
 const ProductPOSTValidation = require("../validations/ProductPOSTValidation")
 const slugify = require("slugify")
 const { v4 } = require("uuid")
-
+const path = require("path")
 
 module.exports = class AdminController{
     static async UsersGET(req, res) {
@@ -211,7 +212,7 @@ module.exports = class AdminController{
         try{
             const { category_id } = req.params
             const { product_name, price, description } = await ProductPOSTValidation(req.body)
-
+            
             let slug = slugify(product_name.toLowerCase())
 
             let product = await products.findOne({
@@ -235,6 +236,31 @@ module.exports = class AdminController{
                 description,
                 price,
             })
+            
+            if(req.files.image) {
+                let images = req.files.image
+                
+                for(let image of images) {
+                    let imageType = image.mimetype.split("/")[0]
+                    if(imageType === "image" || imageType === "vector") {
+                        let imageName = image.md5
+                        let imageFormat = image.mimetype.split("/")[1]
+                        let imagePath = path.join(__dirname, "..", "public", "product_images", `${imageName}.${imageFormat}`)
+
+                        await image.mv(imagePath)
+
+                        let productImage = await product_images.create({
+                            product_image_id: v4(),
+                            product_id: product.product_id,
+                            image: `${imageName}.${imageFormat}`,
+                        })
+
+                    }else {
+                        throw new Error("Image type image or vector")
+                    }
+                }
+            } 
+
 
             res.status(200).json({
                 ok: true,

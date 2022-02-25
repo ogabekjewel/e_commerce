@@ -5,6 +5,7 @@ const Path = require("path")
 const Morgan = require("morgan")
 const { PORT } = require("../config")
 const mongo = require("./modules/mongoose")
+const ExpressFileUpload = require("express-fileupload")
 
 const app = Express()
 
@@ -12,7 +13,7 @@ async function server() {
     app.use(CookieParser())
     app.use(Morgan("tiny"))
     app.use("/public", Express.static(Path.join(__dirname, "public")))
-
+    app.use(ExpressFileUpload())
     app.use(Express.json())
     app.use(Express.urlencoded({ extended: true}))
 
