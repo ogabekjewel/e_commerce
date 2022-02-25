@@ -172,6 +172,26 @@ module.exports = class AdminController{
         try{
             let { category_id } = req.params
 
+            let productItems = await categories.find({
+                category_id,
+            })
+
+            for(let product of productItems) {
+                let product_id = product
+
+                await product_images.deleteMany({
+                    product_id,
+                })
+
+                await product_options.deleteMany({
+                    product_id,
+                })
+
+                await products.deleteMany({
+                    product_id,
+                })
+            }
+
             await categories.deleteOne({
                 category_id,
             })
@@ -338,6 +358,34 @@ module.exports = class AdminController{
                 products: productItems,
             })
 
+        } catch(e) {
+            res.status(400).json({
+                ok: false,
+                message: e + "",
+            })
+        }
+    }
+
+    static async ProductsDELETE(req, res) {
+        try {
+            let { product_id } = req.params
+
+            await products.deleteOne({
+                product_id,
+            })
+    
+            await product_images.deleteMany({
+                product_id,
+            })
+    
+            await product_options.deleteMany({
+                product_id,
+            })
+    
+            res.status(200).json({
+                ok: true,
+                message: "Product deleted",
+            })
         } catch(e) {
             res.status(400).json({
                 ok: false,
