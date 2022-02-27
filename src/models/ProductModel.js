@@ -27,6 +27,14 @@ const ProductSchema = new mongoose.Schema({
         type: String,
         required: true,
     }, 
+    is_rec: {
+        type: Boolean,
+        required: true,
+    },
+    is_best: {
+        type: Boolean,
+        required: true,
+    },
 })
 
 const products = mongoose.model("products", ProductSchema)
