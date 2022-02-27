@@ -260,7 +260,7 @@ module.exports = class AdminController{
                 price,
             })
             
-            if(req.files.image) {
+            if(req.files.image.length) {
                 let images = req.files.image
                 
                 for(let image of images) {
@@ -445,4 +445,49 @@ module.exports = class AdminController{
         }
     }
 
+    static async ProductPATCH(req, res) {
+        try {
+            let { product_id } = req.params
+            let { type, cond } = req.query
+
+
+            if(type !== "rec" && type !=="best") {
+                throw new Error("Type must be 'rec' and 'best'")
+            }
+
+            if(cond !== "true" && cond !== "false"){
+                throw new Error("cond must be 'true' and 'false'")
+            }
+
+            if(type === "rec") {
+                await products.findOneAndUpdate(
+                    {
+                        product_id,
+                    },
+                    {
+                        is_rec: cond === "true" ? true : false,
+                    }
+                )
+            } else if(type === "best") {
+                await products.findOneAndUpdate(
+                    {
+                        product_id,
+                    },
+                    {
+                        is_best: cond === "true" ? true : false, 
+                    }
+                )
+            }
+
+            res.status(200).json({
+                ok: true,
+                message: "UPDATED"
+            })
+        } catch(e) {
+            res.status(400).json({
+                ok: false,
+                message: e + ""
+            })
+        }
+    }
 }

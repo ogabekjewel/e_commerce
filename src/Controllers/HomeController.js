@@ -13,24 +13,24 @@ module.exports = async (req, res) => {
 
         let randomRec = []
 
-        while (randomRec.length < 13) {
+        while (randomRec.length < 13 && recProducts.length > 0) {
             let randomNumber = Math.round(Math.random() * recProducts.length - 1)
+            let product = recProducts.pop(randomNumber)
+            randomRec.push(product)
         }
-
-        let recProduct = recProducts.pop(randomNumber)
-        randomRec.push(product)
-
+        
         let randomBest = []
 
-        while (randomBest.length < 13) {
+        while (randomBest.length < 13 && bestSellers.length > 0) {
             let randomNumber = Math.round(Math.random() * bestSellers.length - 1)
+            let product = bestSellers.pop(randomNumber)
+            randomBest.push(product)
         }
 
-        let bestProduct = bestSellers.pop(randomNumber)
-        randomBest.push(product)
+        
 
         res.status(200).json({
-            pk: true,
+            ok: true,
             catigories: categoryList,
             recProducts: randomRec,
             bestSellers: randomBest,

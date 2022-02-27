@@ -30,10 +30,12 @@ const ProductSchema = new mongoose.Schema({
     is_rec: {
         type: Boolean,
         required: true,
+        default: false,
     },
     is_best: {
         type: Boolean,
         required: true,
+        default: false,
     },
 })
 
