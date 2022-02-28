@@ -1,5 +1,8 @@
 const categories = require("../models/CategoryModel")
 const products = require("../models/ProductModel")
+const carts = require("../models/CartModel")
+const { v4 } = require("uuid")
+
 
 module.exports = class ProductCntroller {
     static async ProductsGET(req, res) {
@@ -61,4 +64,121 @@ module.exports = class ProductCntroller {
             })
         }
     }
+
+    static async CartAddPOST(req, res) {
+        try {
+            let { product_id } = req.params
+
+            let product = await products.find({
+                product_id,
+            })
+
+            if(!product) throw new Error("Product not found")
+
+            let cart = await carts.findOne({
+                product_id,
+                user_id: req.user_id,
+            })
+
+            if(cart) throw new Error("cart is already added")
+
+            await carts.create({
+                cart_id: v4(),
+                caunt: 1,
+                product_id,
+                user_id: req.user.user_id,
+            })
+
+            res.status(201).json({
+                ok: true,
+                message: "Added",
+            })
+        } catch(e) {
+            res.status(400).json({
+                ok: false,
+                message: e + "",
+            })
+        }
+    }
+
+    static async CartPlusPATCH(req, res) {
+        try {
+            let { product_id } = req.params
+
+        
+            let product = await products.find({
+                product_id,
+            })
+    
+            if(!product) throw new Error("Product not found")
+    
+            let cart = await carts.findOne({
+                product_id,
+                user_id: req.user.user_id,
+            })
+    
+            if(!cart) throw new Error("cart not found")
+    
+            await carts.findOneAndUpdate(
+                {
+                    cart_id: cart.cart_id,
+                },
+                {
+                    count: cart.count + 1,
+                }
+            )
+    
+            res.status(200).json({
+                ok: true,
+                message: "Plus 1"
+            })
+        } catch(e) {
+            res.status(400).json({
+                ok: false,
+                message: e + "",
+            })
+        }
+    }
+
+    static async CartMinusPATCH(req, res) {
+        try {
+            let { product_id } = req.params
+
+        
+            let product = await products.find({
+                product_id,
+            })
+    
+            if(!product) throw new Error("Product not found")
+    
+            let cart = await carts.findOne({
+                product_id,
+                user_id: req.user.user_id,
+            })
+    
+            if(!cart) throw new Error("cart not found")
+    
+            await carts.findOneAndUpdate(
+                {
+                    cart_id: cart.cart_id,
+                },
+                {
+                    count: cart.count - 1,
+                }
+            )
+    
+            res.status(200).json({
+                ok: true,
+                message: "Minus 1"
+            })
+        } catch(e) {
+            res.status(400).json({
+                ok: false,
+                message: e + "",
+            })
+        }
+    }
 }
+
+
+
