@@ -101,6 +101,24 @@ module.exports = class ProductCntroller {
         }
     }
 
+    static async CartGET(req, res) {
+        try {
+            let cart = await carts.findOne({
+                user_id: req.user.user_id,
+            })
+
+            res.status(200).json({
+                ok: true,
+                cart,
+            })
+        } catch(e) {
+            res.status(200).json({
+                ok: false,
+                message: e + "",
+            })
+        }
+    }
+
     static async CartPlusPATCH(req, res) {
         try {
             let { product_id } = req.params
@@ -158,14 +176,20 @@ module.exports = class ProductCntroller {
     
             if(!cart) throw new Error("cart not found")
     
-            await carts.findOneAndUpdate(
-                {
-                    cart_id: cart.cart_id,
-                },
-                {
-                    count: cart.count - 1,
-                }
-            )
+            if(cart.count == 1) {
+                await carts.deleteOne({
+                    cart_id: cart.cart_id
+                })
+            } else {
+                await carts.findOneAndUpdate(
+                    {
+                        cart_id: cart.cart_id,
+                    },
+                    {
+                        count: cart.count - 1,
+                    }
+                )
+            }
     
             res.status(200).json({
                 ok: true,
