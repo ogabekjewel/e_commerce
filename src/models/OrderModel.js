@@ -14,6 +14,19 @@ const OrderSchema = new mongoose.Schema({
         type: Date,
         required: true,
     },
+    full_name: {
+        type: String,
+        required: true,
+    },
+    shipping_region: {
+        type: String,
+        required: true,
+    },
+    status: {
+        type: String,
+        required: true,
+        default: "Payed",
+    },
   
 })
 
