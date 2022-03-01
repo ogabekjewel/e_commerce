@@ -16,6 +16,6 @@ const CommentLikeSchema = new mongoose.Schema({
     }
 })
 
-const comment_likes = mongoose.model("commnet_like", CommentLikeSchema)
+const comment_likes = mongoose.model("comment_likes", CommentLikeSchema)
 
 module.exports = comment_likes

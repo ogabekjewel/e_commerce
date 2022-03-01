@@ -14,10 +14,10 @@ router.post("/products/cart/:product_id", AuthMiddleware, CartAddPOST)
 router.patch("/products/cart/plus/:product_id", AuthMiddleware, CartPlusPATCH)
 router.patch("/products/cart/minus/:product_id", AuthMiddleware, CartMinusPATCH)
 
-router.post("/comment/like/:comment_id", AuthMiddleware, CommentLikePOST)
-router.post("/comment/dislike/:comment_id", AuthMiddleware, CommentDisLikePOST)
-router.delete("/comment/like/:comment_id", AuthMiddleware, CommentLikeDELETE)
-router.delete("/comment/dislike/:comment_id", AuthMiddleware, CommentDisLikeDELETE)
+router.post("/products/comment/like/:comment_id", AuthMiddleware, CommentLikePOST)
+router.post("/products/comment/dislike/:comment_id", AuthMiddleware, CommentDisLikePOST)
+router.delete("/products/comment/like/:comment_id", AuthMiddleware, CommentLikeDELETE)
+router.delete("/products/comment/dislike/:comment_id", AuthMiddleware, CommentDisLikeDELETE)
 
 module.exports = {
     path: "/",

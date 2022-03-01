@@ -232,6 +232,22 @@ module.exports = class ProductCntroller {
             let productCommets = await comments.find({
                 product_id: product.product_id,
             })
+
+            for (let comment of productCommets) {
+                let likes = await comment_likes.find({
+                    product_id: comment.product_id,
+                })
+                if(likes) {
+                    comment._doc.likes = likes.length
+                }
+                let dislikes = await comment_dislikes.find({
+                    product_id: comment.product_id,
+                })
+                if(likes) {
+                    comment._doc.dislikes = dislikes.length
+                }
+            }
+
             let token = req?.cookies?.token || req.headers["authorization"] 
             
             token = checkToken(token)
@@ -242,7 +258,7 @@ module.exports = class ProductCntroller {
             let cart
 
             if(req.user) {
-                let cart = await carts.findOne({
+                cart = await carts.findOne({
                    user_id: req.user.user_id,
                 })
             }
@@ -340,18 +356,25 @@ module.exports = class ProductCntroller {
                 comment_id: comment.comment_id,
             })
 
-            if(like) throw new Error("Like already added")
+            if(like) {
+                await comment_likes.deleteOne({
+                    user_id: req.user.user_id,
+                    comment_id: comment.comment_id,
+                })
+            } else {
+                await comment_dislikes.deleteOne({
+                    user_id: req.user.user_id,
+                    comment_id: comment.comment_id,
+                })
+    
+                await comment_likes.create({
+                    like_id: v4(),
+                    user_id: req.user.user_id,
+                    comment_id: comment.comment_id,
+                })
+            }
 
-            await comment_dislikes.deleteOne({
-                user_id: req.user.user_id,
-                comment_id: comment.comment_id,
-            })
-
-            await comment_likes.create({
-                like_id: v4(),
-                user_id: req.user.user_id,
-                comment_id: comment.comment_id,
-            })
+           
 
             res.status(201).json({
                 ok: true,
@@ -409,18 +432,25 @@ module.exports = class ProductCntroller {
                 comment_id: comment.comment_id,
             })
 
-            if(dislike) throw new Error("Like already added")
+            if(dislike) {
+                await comment_dislikes.deleteOne({
+                    user_id: req.user.user_id,
+                    comment_id: comment.comment_id,
+                })
+            } else {
+                await comment_likes.deleteOne({
+                    user_id: req.user.user_id,
+                    comment_id: comment.comment_id,
+                })
 
-            await comment_likes.deleteOne({
-                user_id: req.user.user_id,
-                comment_id: comment.comment_id,
-            })
+                await comment_dislikes.create({
+                    user_id: req.user.user_id,
+                    comment_id: comment.comment_id,
+                    dislike_id: v4(),
+                })
+            }
 
-            await comment_dislikes.create({
-                user_id: req.user.user_id,
-                comment_id: comment.comment_id,
-                dislike_id: v4(),
-            })
+            
 
             res.status(201).json({
                 ok: true,
